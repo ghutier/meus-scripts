@@ -112,7 +112,7 @@ local function criarBotao(posicaoY, textoInicial)
     return btn
 end
 
--- Botão 1: Noclip
+-- Botão 1: Noclip (Ativa/Desativa)
 local btnNoclip = criarBotao(50, "Noclip: [OFF]")
 local noclipAtivo = false
 local noclipConnection
@@ -198,29 +198,37 @@ RunService.RenderStepped:Connect(function()
     end
 end)
 
--- Botão 3: Anti-Pego Automático (Afasta o player sozinho quando o monstro chega a menos de 15 metros)
-local btnAntiPego = criarBotao(140, "Anti-Pego Auto: [OFF]")
-local antiPegoAtivo = false
+-- Botão 3: Fuga Automática com Atravessamento (Ativa/Desativa)
+local btnFugaAuto = criarBotao(140, "Fuga Automática: [OFF]")
+local fugaAutoAtiva = false
 
-btnAntiPego.MouseButton1Click:Connect(function()
-    antiPegoAtivo = not antiPegoAtivo
-    if antiPegoAtivo then
-        btnAntiPego.Text = "Anti-Pego Auto: [ON]"
-        btnAntiPego.BackgroundColor3 = Color3.fromRGB(0, 170, 0)
+btnFugaAuto.MouseButton1Click:Connect(function()
+    fugaAutoAtiva = not fugaAutoAtiva
+    if fugaAutoAtiva then
+        btnFugaAuto.Text = "Fuga Automática: [ON]"
+        btnFugaAuto.BackgroundColor3 = Color3.fromRGB(0, 170, 0)
     else
-        btnAntiPego.Text = "Anti-Pego Auto: [OFF]"
-        btnAntiPego.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+        btnFugaAuto.Text = "Fuga Automática: [OFF]"
+        btnFugaAuto.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
     end
 end)
 
+-- Lógica contínua da Fuga Automática (Desliga colisão e teleporta o jogador para trás do monstro atravessando tudo)
 RunService.Stepped:Connect(function()
-    if not antiPegoAtivo then return end
+    if not fugaAutoAtiva then return end
     
     local char = localPlayer.Character
     local hrp = char and char:FindFirstChild("HumanoidRootPart")
     if not hrp then return end
     
-    -- Varre o mapa procurando monstros próximos
+    -- Desativa a colisão do player automaticamente enquanto a fuga estiver ligada para atravessar paredes
+    for _, part in ipairs(char:GetDescendants()) do
+        if part:IsA("BasePart") then
+            part.CanCollide = false
+        end
+    end
+    
+    -- Procura se há algum monstro a menos de 20 metros
     for _, obj in ipairs(workspace:GetDescendants()) do
         if obj:IsA("Model") and obj ~= char then
             local humanoid = obj:FindFirstChildOfClass("Humanoid")
@@ -229,9 +237,9 @@ RunService.Stepped:Connect(function()
             if humanoid and enemyRoot and not Players:GetPlayerFromCharacter(obj) then
                 local distancia = (hrp.Position - enemyRoot.Position).Magnitude
                 
-                -- Se o monstro chegar a menos de 15 metros, o player é empurrado instantaneamente para longe
-                if distancia < 15 then
-                    hrp.CFrame = hrp.CFrame + (hrp.CFrame.LookVector * -35) + Vector3.new(0, 10, 0)
+                if distancia < 20 then
+                    -- Joga o player 40 blocos para trás da direção que o monstro está olhando (ou para longe)
+                    hrp.CFrame = hrp.CFrame + (enemyRoot.CFrame.LookVector * -45) + Vector3.new(0, 15, 0)
                 end
             end
         end
@@ -246,4 +254,4 @@ btnFechar.MouseButton1Click:Connect(function()
     screenGui:Destroy()
 end)
 
-print("Painel atualizado com Anti-Pego Automático!")
+print("Painel com Fuga Automática Inteligente carregado!")
