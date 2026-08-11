@@ -5,7 +5,6 @@ end
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
-local UserInputService = game:GetService("UserInputService")
 local localPlayer = Players.LocalPlayer
 local camera = workspace.CurrentCamera
 
@@ -21,7 +20,7 @@ screenGui.Name = "MeuPainelScript"
 screenGui.ResetOnSpawn = false
 screenGui.Parent = playerGui
 
--- Janela Principal (Tamanho ajustado sem o botão de dash)
+-- Janela Principal
 local mainFrame = Instance.new("Frame")
 mainFrame.Name = "MainFrame"
 mainFrame.Size = UDim2.new(0, 260, 0, 265)
@@ -40,7 +39,7 @@ cornerMain.Parent = mainFrame
 local titleLabel = Instance.new("TextLabel")
 titleLabel.Size = UDim2.new(1, 0, 0, 40)
 titleLabel.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-titleLabel.Text = " The Mimic - Painel Funcional"
+titleLabel.Text = " Anti-Mimic (Fuga Automática)"
 titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 titleLabel.TextSize = 14
 titleLabel.Font = Enum.Font.GothamBold
@@ -113,7 +112,7 @@ local function criarBotao(posicaoY, textoInicial)
     return btn
 end
 
--- Botão 1: Noclip (Atravessar paredes e portas trancadas do mapa)
+-- Botão 1: Noclip
 local btnNoclip = criarBotao(50, "Noclip: [OFF]")
 local noclipAtivo = false
 local noclipConnection
@@ -140,7 +139,7 @@ btnNoclip.MouseButton1Click:Connect(function()
     end
 end)
 
--- Botão 2: Ver Inimigos Perto (ESP / Distância real)
+-- Botão 2: Ver Inimigos Perto (ESP)
 local btnEsp = criarBotao(95, "Ver Inimigos Perto: [OFF]")
 local espAtivo = false
 local espDrawings = {}
@@ -199,21 +198,43 @@ RunService.RenderStepped:Connect(function()
     end
 end)
 
--- Botão 3: Teleporte de Emergência para Cima (Fuga definitiva do monstro)
-local btnEscape = criarBotao(140, "Subir p/ Fugir [Tecla F]")
-local function fugirParaCima()
-    local char = localPlayer.Character
-    if char and char:FindFirstChild("HumanoidRootPart") then
-        local hrp = char.HumanoidRootPart
-        -- Joga o jogador 35 studs para cima, tirando ele do alcance do chão onde o monstro anda
-        hrp.CFrame = hrp.CFrame + Vector3.new(0, 35, 0)
-    end
-end
+-- Botão 3: Anti-Pego Automático (Afasta o player sozinho quando o monstro chega a menos de 15 metros)
+local btnAntiPego = criarBotao(140, "Anti-Pego Auto: [OFF]")
+local antiPegoAtivo = false
 
-btnEscape.MouseButton1Click:Connect(fugirParaCima)
-UserInputService.InputBegan:Connect(function(input, gp)
-    if not gp and input.KeyCode == Enum.KeyCode.F then
-        fugirParaCima()
+btnAntiPego.MouseButton1Click:Connect(function()
+    antiPegoAtivo = not antiPegoAtivo
+    if antiPegoAtivo then
+        btnAntiPego.Text = "Anti-Pego Auto: [ON]"
+        btnAntiPego.BackgroundColor3 = Color3.fromRGB(0, 170, 0)
+    else
+        btnAntiPego.Text = "Anti-Pego Auto: [OFF]"
+        btnAntiPego.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+    end
+end)
+
+RunService.Stepped:Connect(function()
+    if not antiPegoAtivo then return end
+    
+    local char = localPlayer.Character
+    local hrp = char and char:FindFirstChild("HumanoidRootPart")
+    if not hrp then return end
+    
+    -- Varre o mapa procurando monstros próximos
+    for _, obj in ipairs(workspace:GetDescendants()) do
+        if obj:IsA("Model") and obj ~= char then
+            local humanoid = obj:FindFirstChildOfClass("Humanoid")
+            local enemyRoot = obj:FindFirstChild("HumanoidRootPart") or obj.PrimaryPart
+            
+            if humanoid and enemyRoot and not Players:GetPlayerFromCharacter(obj) then
+                local distancia = (hrp.Position - enemyRoot.Position).Magnitude
+                
+                -- Se o monstro chegar a menos de 15 metros, o player é empurrado instantaneamente para longe
+                if distancia < 15 then
+                    hrp.CFrame = hrp.CFrame + (hrp.CFrame.LookVector * -35) + Vector3.new(0, 10, 0)
+                end
+            end
+        end
     end
 end)
 
@@ -225,4 +246,4 @@ btnFechar.MouseButton1Click:Connect(function()
     screenGui:Destroy()
 end)
 
-print("Painel atualizado e otimizado para jogos de terror carregado!")
+print("Painel atualizado com Anti-Pego Automático!")
