@@ -20,11 +20,11 @@ screenGui.Name = "MeuPainelScript"
 screenGui.ResetOnSpawn = false
 screenGui.Parent = playerGui
 
--- Janela Principal
+-- Janela Principal (Aumentei um pouco o tamanho para caber o novo botão)
 local mainFrame = Instance.new("Frame")
 mainFrame.Name = "MainFrame"
-mainFrame.Size = UDim2.new(0, 260, 0, 220)
-mainFrame.Position = UDim2.new(0.5, -130, 0.5, -110)
+mainFrame.Size = UDim2.new(0, 260, 0, 265)
+mainFrame.Position = UDim2.new(0.5, -130, 0.5, -132)
 mainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
 mainFrame.BorderSizePixel = 0
 mainFrame.Active = true
@@ -70,7 +70,7 @@ local function criarBotao(nome, posicaoY, textoInicial)
 end
 
 -- Botão 1: Noclip (Atravessar Inimigos)
-local btnNoclip = criarBotao("Noclip", 55, "Ativar Noclip: [OFF]")
+local btnNoclip = criarBotao("Noclip", 50, "Ativar Noclip: [OFF]")
 local noclipAtivo = false
 local noclipConnection
 
@@ -99,8 +99,45 @@ btnNoclip.MouseButton1Click:Connect(function()
     end
 end)
 
--- Botão 2: Dash de Fuga (Teleporte rápido para frente)
-local btnDash = criarBotao("Dash", 100, "Dash de Fuga [Tecla E]")
+-- Botão 2: Anti-Touch (Apaga os TouchInterests / Hitboxes de toque dos monstros)
+local btnAntiTouch = criarBotao("AntiTouch", 95, "Anti-Touch: [OFF]")
+local antiTouchAtivo = false
+local antiTouchConnection
+
+btnAntiTouch.MouseButton1Click:Connect(function()
+    antiTouchAtivo = not antiTouchAtivo
+    if antiTouchAtivo then
+        btnAntiTouch.Text = "Anti-Touch: [ON]"
+        btnAntiTouch.BackgroundColor3 = Color3.fromRGB(0, 170, 0)
+        
+        -- Remove imediatamente qualquer TouchInterest existente no Workspace
+        for _, obj in ipairs(workspace:GetDescendants()) do
+            if obj:IsA("TouchTransmitter") or obj.Name:lower():find("hitbox") or obj.Name:lower():find("touch") then
+                pcall(function()
+                    obj:Destroy()
+                end)
+            end
+        end
+        
+        -- Fica monitorando caso novos monstros apareçam
+        antiTouchConnection = workspace.DescendantAdded:Connect(function(obj)
+            if obj:IsA("TouchTransmitter") or obj.Name:lower():find("hitbox") then
+                pcall(function()
+                    obj:Destroy()
+                end)
+            end
+        end)
+    else
+        btnAntiTouch.Text = "Anti-Touch: [OFF]"
+        btnAntiTouch.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+        if antiTouchConnection then
+            antiTouchConnection:Disconnect()
+        end
+    end
+end)
+
+-- Botão 3: Dash de Fuga (Teleporte rápido para frente)
+local btnDash = criarBotao("Dash", 140, "Dash de Fuga [Tecla E]")
 btnDash.MouseButton1Click:Connect(function()
     local char = localPlayer.Character
     if char and char:FindFirstChild("HumanoidRootPart") then
@@ -120,11 +157,11 @@ UserInputService.InputBegan:Connect(function(input, gp)
     end
 end)
 
--- Botão 3: Fechar / Ocultar Painel
-local btnFechar = criarBotao("Fechar", 145, "Fechar Painel")
+-- Botão 4: Fechar / Ocultar Painel
+local btnFechar = criarBotao("Fechar", 185, "Fechar Painel")
 btnFechar.BackgroundColor3 = Color3.fromRGB(170, 0, 0)
 btnFechar.MouseButton1Click:Connect(function()
     screenGui:Destroy()
 end)
 
-print("Painel carregado com sucesso!")
+print("Painel atualizado com Anti-Touch carregado com sucesso!")
