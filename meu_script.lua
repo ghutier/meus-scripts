@@ -21,11 +21,11 @@ screenGui.Name = "MeuPainelScript"
 screenGui.ResetOnSpawn = false
 screenGui.Parent = playerGui
 
--- Janela Principal
+-- Janela Principal (Tamanho ajustado sem o botão de dash)
 local mainFrame = Instance.new("Frame")
 mainFrame.Name = "MainFrame"
-mainFrame.Size = UDim2.new(0, 260, 0, 310)
-mainFrame.Position = UDim2.new(0.5, -130, 0.5, -155)
+mainFrame.Size = UDim2.new(0, 260, 0, 265)
+mainFrame.Position = UDim2.new(0.5, -130, 0.5, -132)
 mainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
 mainFrame.BorderSizePixel = 0
 mainFrame.Active = true
@@ -40,9 +40,9 @@ cornerMain.Parent = mainFrame
 local titleLabel = Instance.new("TextLabel")
 titleLabel.Size = UDim2.new(1, 0, 0, 40)
 titleLabel.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-titleLabel.Text = " Painel Global + ESP"
+titleLabel.Text = " The Mimic - Painel Funcional"
 titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-titleLabel.TextSize = 15
+titleLabel.TextSize = 14
 titleLabel.Font = Enum.Font.GothamBold
 titleLabel.TextXAlignment = Enum.TextXAlignment.Left
 titleLabel.Parent = mainFrame
@@ -113,64 +113,35 @@ local function criarBotao(posicaoY, textoInicial)
     return btn
 end
 
--- Botão 1: Noclip Global
-local btnNoclip = criarBotao(50, "Noclip Global: [OFF]")
+-- Botão 1: Noclip (Atravessar paredes e portas trancadas do mapa)
+local btnNoclip = criarBotao(50, "Noclip: [OFF]")
 local noclipAtivo = false
 local noclipConnection
 
 btnNoclip.MouseButton1Click:Connect(function()
     noclipAtivo = not noclipAtivo
     if noclipAtivo then
-        btnNoclip.Text = "Noclip Global: [ON]"
+        btnNoclip.Text = "Noclip: [ON]"
         btnNoclip.BackgroundColor3 = Color3.fromRGB(0, 170, 0)
         noclipConnection = RunService.Stepped:Connect(function()
-            for _, player in ipairs(Players:GetPlayers()) do
-                local char = player.Character
-                if char then
-                    for _, part in ipairs(char:GetDescendants()) do
-                        if part:IsA("BasePart") then
-                            part.CanCollide = false
-                        end
+            local char = localPlayer.Character
+            if char then
+                for _, part in ipairs(char:GetDescendants()) do
+                    if part:IsA("BasePart") then
+                        part.CanCollide = false
                     end
                 end
             end
         end)
     else
-        btnNoclip.Text = "Noclip Global: [OFF]"
+        btnNoclip.Text = "Noclip: [OFF]"
         btnNoclip.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
         if noclipConnection then noclipConnection:Disconnect() end
     end
 end)
 
--- Botão 2: Anti-Touch Global
-local btnAntiTouch = criarBotao(95, "Anti-Touch Global: [OFF]")
-local antiTouchAtivo = false
-local antiTouchConnection
-
-btnAntiTouch.MouseButton1Click:Connect(function()
-    antiTouchAtivo = not antiTouchAtivo
-    if antiTouchAtivo then
-        btnAntiTouch.Text = "Anti-Touch Global: [ON]"
-        btnAntiTouch.BackgroundColor3 = Color3.fromRGB(0, 170, 0)
-        for _, obj in ipairs(workspace:GetDescendants()) do
-            if obj:IsA("TouchTransmitter") or obj.Name:lower():find("hitbox") or obj.Name:lower():find("touch") then
-                pcall(function() obj:Destroy() end)
-            end
-        end
-        antiTouchConnection = workspace.DescendantAdded:Connect(function(obj)
-            if obj:IsA("TouchTransmitter") or obj.Name:lower():find("hitbox") then
-                pcall(function() obj:Destroy() end)
-            end
-        end)
-    else
-        btnAntiTouch.Text = "Anti-Touch Global: [OFF]"
-        btnAntiTouch.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
-        if antiTouchConnection then antiTouchConnection:Disconnect() end
-    end
-end)
-
--- Botão 3: Ver Inimigos Perto (ESP / Distância)
-local btnEsp = criarBotao(140, "Ver Inimigos Perto: [OFF]")
+-- Botão 2: Ver Inimigos Perto (ESP / Distância real)
+local btnEsp = criarBotao(95, "Ver Inimigos Perto: [OFF]")
 local espAtivo = false
 local espDrawings = {}
 
@@ -201,19 +172,16 @@ RunService.RenderStepped:Connect(function()
     local myRoot = myChar and myChar:FindFirstChild("HumanoidRootPart")
     if not myRoot then return end
 
-    -- Varre o Workspace procurando por monstros (humanoides ou modelos com Humanoid que não sejam jogadores)
     for _, obj in ipairs(workspace:GetDescendants()) do
         if obj:IsA("Model") and obj ~= myChar then
             local humanoid = obj:FindFirstChildOfClass("Humanoid")
             local rootPart = obj:FindFirstChild("HumanoidRootPart") or obj.PrimaryPart
             
-            -- Confere se é um NPC/Monstro (tem Humanoid e não está na pasta de Players)
             if humanoid and rootPart and not Players:GetPlayerFromCharacter(obj) then
                 local vector, onScreen = camera:WorldToViewportPoint(rootPart.Position)
                 if onScreen then
                     local distancia = math.floor((myRoot.Position - rootPart.Position).Magnitude)
                     
-                    -- Cria um texto flutuante na tela indicando o nome e a distância do monstro
                     local textoEsp = Drawing.new("Text")
                     textoEsp.Visible = true
                     textoEsp.Center = true
@@ -231,31 +199,30 @@ RunService.RenderStepped:Connect(function()
     end
 end)
 
--- Botão 4: Dash em Grupo
-local btnDash = criarBotao(185, "Dash em Grupo [Tecla E]")
-local function executarDash()
-    for _, player in ipairs(Players:GetPlayers()) do
-        local char = player.Character
-        if char and char:FindFirstChild("HumanoidRootPart") then
-            local hrp = char.HumanoidRootPart
-            hrp.CFrame = hrp.CFrame + (hrp.CFrame.LookVector * 25)
-        end
+-- Botão 3: Teleporte de Emergência para Cima (Fuga definitiva do monstro)
+local btnEscape = criarBotao(140, "Subir p/ Fugir [Tecla F]")
+local function fugirParaCima()
+    local char = localPlayer.Character
+    if char and char:FindFirstChild("HumanoidRootPart") then
+        local hrp = char.HumanoidRootPart
+        -- Joga o jogador 35 studs para cima, tirando ele do alcance do chão onde o monstro anda
+        hrp.CFrame = hrp.CFrame + Vector3.new(0, 35, 0)
     end
 end
 
-btnDash.MouseButton1Click:Connect(executarDash)
+btnEscape.MouseButton1Click:Connect(fugirParaCima)
 UserInputService.InputBegan:Connect(function(input, gp)
-    if not gp and input.KeyCode == Enum.KeyCode.E then
-        executarDash()
+    if not gp and input.KeyCode == Enum.KeyCode.F then
+        fugirParaCima()
     end
 end)
 
--- Botão 5: Fechar Painel
-local btnFechar = criarBotao(230, "Fechar Painel")
+-- Botão 4: Fechar Painel
+local btnFechar = criarBotao(185, "Fechar Painel")
 btnFechar.BackgroundColor3 = Color3.fromRGB(170, 0, 0)
 btnFechar.MouseButton1Click:Connect(function()
     limparEsp()
     screenGui:Destroy()
 end)
 
-print("Painel com ESP e Minimizar carregado com sucesso!")
+print("Painel atualizado e otimizado para jogos de terror carregado!")
