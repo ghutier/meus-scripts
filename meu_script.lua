@@ -1,69 +1,3 @@
-------------- CREDITS -------------
-
---[[
-     _      ___         ____  ______
-    | | /| / (_)__  ___/ / / / /  _/
-    | |/ |/ / / _ \/ _  / /_/ // /  
-    |__/|__/_/_//_/\_,_/\____/___/
-    ,
-    v1.6.62  |  2025-12-09  |  Roblox UI Library for scripts
-    
-    To view the source code, see the `src/` folder on the official GitHub repository.
-    
-    Author: Footagesus ( Footages, .ftgs, oftgs )
-    Github: https://github.com/Footagesus/WindUI
-    Discord: https://discord.gg/ftgs-development-hub-1300692552005189632
-    License: MIT
-    
-    ████████╗████████╗░░░░░██╗██╗░░░██╗  ░██████╗████████╗██╗░░░██╗██████╗░██╗░█████╗░
-    ╚══██╔══╝╚══██╔══╝░░░░░██║╚██╗░██╔╝  ██╔════╝╚══██╔══╝██║░░░██║██╔══██╗██║██╔══██╗
-    ░░░██║░░░░░░██║░░░░░░░░██║░╚████╔╝░  ╚█████╗░░░░██║░░░██║░░░██║██║░░██║██║██║░░██║
-    ░░░██║░░░░░░██║░░░██╗░░██║░░╚██╔╝░░  ░╚═══██╗░░░██║░░░██║░░░██║██║░░██║██║██║░░██║
-    ░░░██║░░░░░░██║░░░╚█████╔╝░░░██║░░░  ██████╔╝░░░██║░░░╚██████╔╝██████╔╝██║╚█████╔╝
-    ░░░╚═╝░░░░░░╚═╝░░░░╚════╝░░░░╚═╝░░░  ╚═════╝░░░░╚═╝░░░░╚═════╝░╚═════╝░╚═╝░╚════╝░
-
-    v3.0.2  |  2026-07-16  |  Roblox Script
-    
-    Author: TTJY Studio
-    Github: https://github.com/Yumiara/SSL-TTJY
-    Discord: https://discord.gg/G7CX2rD9p2
-    License: ND ( No Derivatives )
-    
-     _____ ____  
-     |_   _|  _ \ 
-       | | | |_) |
-       | | |  _ < 
-      _| |_| |_) |
-     |_____|____/ 
-              
-    v1  |  2025-07-06  | Code Obfuscator & Optimizer
-    
-    Author: dr_breen
-    Github: https://github.com/7Duser/ironbrew1
-    License: ND ( No Derivatives )
-    
-     █████╗ ██╗   ██╗████████╗██╗  ██╗  ██████╗
-    ██╔══██╗██║   ██║╚══██╔══╝██║  ██║  ╚════██╗
-    ███████║██║   ██║   ██║   ███████║   █████╔╝
-    ██╔══██║██║   ██║   ██║   ██╔══██║   ╚═══██╗
-    ██║  ██║╚██████╔╝   ██║   ██║  ██║  ██████╔╝
-    ╚═╝  ╚═╝ ╚═════╝    ╚═╝   ╚═╝  ╚═╝  ╚═════╝
-
-    v3.4.1  |  2025-XX-XX  | Private Whitelist Service
-
-    Author: TTJY
-    License: ND ( No Derivatives )
-    
-    ▒█▀▀█ ░█▀▀█ ▒█▄░▒█ ▒█▀▀▄ ░█▀▀█ 　 ▒█▀▀▄ ▒█▀▀▀ ▒█░░▒█ ▒█▀▀▀ ▒█░░░ ▒█▀▀▀█ ▒█▀▀█ ▒█▀▄▀█ ▒█▀▀▀ ▒█▄░▒█ ▀▀█▀▀ 
-    ▒█▄▄█ ▒█▄▄█ ▒█▒█▒█ ▒█░▒█ ▒█▄▄█ 　 ▒█░▒█ ▒█▀▀▀ ░▒█▒█░ ▒█▀▀▀ ▒█░░░ ▒█░░▒█ ▒█▄▄█ ▒█▒█▒█ ▒█▀▀▀ ▒█▒█▒█ ░▒█░░ 
-    ▒█░░░ ▒█░▒█ ▒█░░▀█ ▒█▄▄▀ ▒█░▒█ 　 ▒█▄▄▀ ▒█▄▄▄ ░░▀▄▀░ ▒█▄▄▄ ▒█▄▄█ ▒█▄▄▄█ ▒█░░░ ▒█░░▒█ ▒█▄▄▄ ▒█░░▀█ ░▒█░░
-
-    v3  |  2025-03-16  | Public Whitelist Service
-
-    Author: Pelican Development
-    Official Site: https://pandadevelopment.net/
-]]
-
 if not game:IsLoaded() then game.Loaded:Wait(); end;
 -- debug.setmemorycategory("CoreMemory") --
 
@@ -131,9 +65,10 @@ local LoaderSettings = GG.LoaderSettings or {
 
     ESPMode = "Box";
     FPSCap = 60;
-    BadNetwork = false;
+    BadNetwork = true;
     AllowCache = true;
     ScaryAC = false;
+    PortugueseLanguage = true;
 
     AllowClientTab = true; 
     AllowAddOn = false; 
@@ -345,8 +280,8 @@ end;
 
 ------------- New Loader -------------
 
+if not isfolder(FOLBASE) then makefolder(FOLBASE); end;
 if not LoaderSettings.BadNetwork then
-    if not isfolder(FOLBASE) then makefolder(FOLBASE); end;
     if not isfile(FOLBASE.."/TTJYStudio.png") then
         local pngfile = Request({
             Url = GITBASE.."/Assets/TTJYStudio.png";
@@ -361,143 +296,7 @@ local TTJYLogo = if not LoaderSettings.BadNetwork and isfile(FOLBASE.."/TTJYStud
     getcustomasset(FOLBASE.."/TTJYStudio.png")
 else "";
 
-do (function()
-    local TWEENINFO = TwInfo(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out);
-    local TWEENINFO2 = TwInfo(1.2, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out);
-    local TWEENINFO3 = TwInfo(0.8, Enum.EasingStyle.Quad, Enum.EasingDirection.Out);
-    local TWEENINFO4 = TwInfo(1.25, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true);
-    local VEC05 = Vec2(0.5, 0.5);
-
-    local ScreenGui = Instancen("ScreenGui");
-    local MainFrame = Instancen("Frame", ScreenGui);
-    local ContentContainer = Instancen("Frame", MainFrame);
-    local Logo = Instancen("ImageLabel", ContentContainer);
-    local Title = Instancen("TextLabel", ContentContainer);
-    local Subtitle = Instancen("TextLabel", ContentContainer);
-    local BarContainer = Instancen("Frame", ContentContainer);
-    local Bar = Instancen("Frame", BarContainer);
-    local BarGlow = Instancen("UIStroke", Bar);
-
-    ScreenGui.Name = "TTJY_Startup";
-    ScreenGui.DisplayOrder = 9999;
-    ScreenGui.IgnoreGuiInset = true;
-    MainFrame.Name = "MainFrame";
-    MainFrame.Size = Dim2(1, 0, 1, 0);
-    MainFrame.BackgroundColor3 = fromRGB(15, 15, 15);
-    MainFrame.BackgroundTransparency = 1;
-    MainFrame.BorderSizePixel = 0;
-    ContentContainer.Name = "Content";
-    ContentContainer.Size = Dim2(0, 400, 0, 300);
-    ContentContainer.AnchorPoint = VEC05;
-    ContentContainer.Position = Dim2(0.5, 0, 0.45, 0);
-    ContentContainer.BackgroundTransparency = 1;
-    Logo.Name = "Logo";
-    Logo.Size = Dim2(0, 0, 0, 0);
-    Logo.AnchorPoint = VEC05;
-    Logo.Position = Dim2(0.5, 0, 0.4, 0);
-    Logo.BackgroundTransparency = 1;
-    Logo.Image = TTJYLogo;
-    Title.Name = "Title";
-    Title.Size = Dim2(1, 0, 0, 50);
-    Title.Position = Dim2(0, 0, 0.65, 0);
-    Title.BackgroundTransparency = 1;
-    Title.Font = Enum.Font.GothamBold;
-    Title.Text = "TTJY HUB";
-    Title.TextColor3 = WHITE;
-    Title.TextSize = 42;
-    Title.TextTransparency = 1;
-    Subtitle.Name = "Subtitle";
-    Subtitle.Size = Dim2(1, 0, 0, 20);
-    Subtitle.Position = Dim2(0, 0, 0.8, 0);
-    Subtitle.BackgroundTransparency = 1;
-    Subtitle.Font = Enum.Font.GothamMedium;
-    Subtitle.Text = "Script Made By TTJY Studio";
-    Subtitle.TextColor3 = fromRGB(150, 150, 150);
-    Subtitle.TextSize = 14;
-    Subtitle.TextTransparency = 1;
-    BarContainer.Name = "BarContainer";
-    BarContainer.Size = Dim2(0, 300, 0, 2);
-    BarContainer.Position = Dim2(0.5, 0, 0.9, 0);
-    BarContainer.AnchorPoint = VEC05;
-    BarContainer.BackgroundColor3 = fromRGB(150, 150, 150);
-    BarContainer.BackgroundTransparency = 0.8;
-    BarContainer.BorderSizePixel = 0;
-    Bar.Name = "Bar";
-    Bar.Size = Dim2(0, 0, 1, 0);
-    Bar.BackgroundColor3 = fromRGB(230, 30, 30);
-    Bar.BorderSizePixel = 0;
-    BarGlow.Color = fromRGB(230, 30, 30);
-    BarGlow.Thickness = 2;
-    BarGlow.Transparency = 0.5;
-    ScreenGui.Parent = gethui();
-
-    local FadeObjects, cProgress, VisTween = {
-        {Logo, "ImageTransparency"},
-        {Title, "TextTransparency"},
-        {Subtitle, "TextTransparency"},
-        {BarContainer, "BackgroundTransparency"},
-        {Bar, "BackgroundTransparency"},
-        {BarGlow, "Transparency"},
-    }, 0, {};
-    
-    local tween = function(obj, info, props)
-        local T = TwCreate(TweenService, obj, info, props);
-        return T, T:Play();
-    end;
-
-    local setVisibility, updateProgress = function(visible)
-        for i = 1, #VisTween do VisTween[i]:Cancel(); end;
-        local targetTransparency = if visible then 0 else 1;
-        VisTween = {}; for i = 1, #FadeObjects do
-            local obj, prop = unpack(FadeObjects[i]);
-            local value; if obj == BarContainer then
-                value = visible and 0.8 or 1;
-            elseif obj == Bar then
-                value = visible and 0 or 1;
-            else
-                value = targetTransparency;
-            end; tblein(VisTween, tween(obj, TWEENINFO, {
-                [prop] = value
-            }));
-        end;
-    end, function(percent)
-        cProgress = math.clamp(percent, 0, 100);
-        tween(Bar, TWEENINFO, {Size = Dim2(cProgress / 100, 0, 1, 0)});
-    end;
-
-    GG.LoadingSignal = Signal.new();
-    GG.LoadingSignal:Connect(function(data)
-        if type(data) == "number" then
-            updateProgress(data);
-        elseif type(data) == "boolean" then
-            setVisibility(not data);
-        elseif type(data) == 'string' then
-            Subtitle.Text = data;
-        end;
-    end);
-
-    tspawn(function()
-        twait(0.2); tween(Logo, TWEENINFO2, {Size = Dim2(0, 150, 0, 150)});
-        twait(0.4); Title.Position = Dim2(0, 0, 0.7, 0);
-        tween(Title, TWEENINFO3, {
-            TextTransparency = 0,
-            Position = Dim2(0, 0, 0.65, 0)
-        }); twait(0.3);
-        tween(Subtitle, TWEENINFO3, {TextTransparency = 0});
-        twait(0.2); tween(BarContainer, TWEENINFO, {BackgroundTransparency = 0.8});
-        tween(BarGlow, TWEENINFO, {Transparency = 0.5}); twait(0.2);
-
-        local pulse = tween(Logo, TWEENINFO4, {
-            Size = Dim2(0, 160, 0, 160),
-        }); tspawn(function()
-            for i = 1, 30 do
-                if cProgress >= i then continue; end;
-                updateProgress(i); twait(0.05 + (i * 0.002));
-            end;
-        end); repeat twait(0.1) until cProgress >= 90;
-        twait(0.5); pulse:Cancel(); setVisibility(false); twait(0.6); ScreenGui:Destroy();
-    end);
-end)(); end;
+GG.LoadingSignal = Signal.new();
 
 ------------- MainPackage -------------
 
@@ -11847,7 +11646,10 @@ AssetStorage.Windy = function()
                                 t = t[ Splited[i] ];
                             end; t[lastKey] = state;
                         end;
-                    end; if LoaderSettings.ThaiLanguage then
+                    end; if LoaderSettings.PortugueseLanguage then
+                        v.Title = v.PT1 or v.EN or v.Title;
+                        v.Desc = v.PT2 or v.EN2 or v.Desc;
+                    elseif LoaderSettings.ThaiLanguage then
                         v.Title = v.TH1 or v.Title;
                         v.Desc = v.TH2 or v.Desc;
                     else
@@ -11910,7 +11712,10 @@ AssetStorage.Windy = function()
                             t = t[ Splited[i] ];
                         end; t[lastKey] = state;
                     end;
-                end; if LoaderSettings.ThaiLanguage then
+                end; if LoaderSettings.PortugueseLanguage then
+                    v.Title = v.PT1 or v.EN or v.Title;
+                    v.Desc = v.PT2 or v.EN2 or v.Desc;
+                elseif LoaderSettings.ThaiLanguage then
                     v.Title = v.TH1 or v.Title;
                     v.Desc = v.TH2 or v.Desc;
                 else
@@ -12001,66 +11806,69 @@ AssetStorage.CorePackage = function()
     };
 
     local Data = {
+        {type="Toggle", EN="Portuguese Language", EN2="Show the menu in Portuguese.", PT1="Idioma Português", PT2="Mostrar o menu em português.", P="PortugueseLanguage", Callback=function(state)
+            LoaderSettings.PortugueseLanguage = state;
+        end};
         {type="Toggle", EN="Thai Language", EN2="ใช้ภาษาไทย (ต้องรันอีกรอบ แต่ปิดหน้านี้ก่อนนะ)", P="ThaiLanguage", Callback=function(state)
             LoaderSettings.ThaiLanguage = state;
         end}; {type = "Space"};
-        {type="Dropdown", EN="ESP Mode", EN2="Change the ESP mode globally.", TH1="โหมด ESP", TH2="เปลี่ยนโหมด ESP แบบglobal", P="ESPMode", Values={"Box", "Highlight", "2D"}, Callback=function(option)
+        {type="Dropdown", EN="ESP Mode", EN2="Change the ESP mode globally.", PT1="Modo ESP", PT2="Muda o modo de ESP globalmente.", TH1="โหมด ESP", TH2="เปลี่ยนโหมด ESP แบบglobal", P="ESPMode", Values={"Box", "Highlight", "2D"}, Callback=function(option)
             LoaderSettings.ESPMode = option; GG.ESPF_ChangeMode(option);
         end};
-        {type="Slider", EN="FPS Cap", EN2="Change FPS capacity.", TH1="ปรับFPS", TH2="จำกัดจำนวน FPS", P="FPSCap", Value={Min=3, Max=250}, Callback=function(value)
+        {type="Slider", EN="FPS Cap", EN2="Change FPS capacity.", PT1="Limite de FPS", PT2="Altera a capacidade de FPS.", TH1="ปรับFPS", TH2="จำกัดจำนวน FPS", P="FPSCap", Value={Min=3, Max=250}, Callback=function(value)
             LoaderSettings.FPSCap = value; setfpscap(value);
         end};
-        {type="Toggle", EN="Bad Network", EN2="Prevent UI Decorations from loading.", TH1="เน็ตไม่ดี", TH2="UI ไม่สวย", P="BadNetwork", Callback=function(state)
+        {type="Toggle", EN="Bad Network", EN2="Prevent UI Decorations from loading.", PT1="Rede Ruim", PT2="Evita carregar decorações da interface.", TH1="เน็ตไม่ดี", TH2="UI ไม่สวย", P="BadNetwork", Callback=function(state)
             LoaderSettings.BadNetwork = state;
         end};
-        {type="Toggle", EN="Allow Cache", EN2="Allow script assets to be save in your workspace folder.", TH1="การใช้ข้อมูลเดิม", TH2="เซฟข้อมูลไว้ในworkspaceเพื่อการใช้งานครั้งถัดไป", P="AllowCache", Callback=function(state)
+        {type="Toggle", EN="Allow Cache", EN2="Allow script assets to be save in your workspace folder.", PT1="Permitir Cache", PT2="Permite salvar arquivos do script na sua pasta de workspace.", TH1="การใช้ข้อมูลเดิม", TH2="เซฟข้อมูลไว้ในworkspaceเพื่อการใช้งานครั้งถัดไป", P="AllowCache", Callback=function(state)
             LoaderSettings.AllowCache = state;
         end};
-        {type="Toggle", EN="Skip Bypass", EN2="Skip the bypass process.", TH1="ไม่สนใจกันโปร", TH2="ข้ามการbypass", P="SkipBypass", Callback=function(state)
+        {type="Toggle", EN="Skip Bypass", EN2="Skip the bypass process.", PT1="Pular Bypass", PT2="Pula o processo de bypass.", TH1="ไม่สนใจกันโปร", TH2="ข้ามการbypass", P="SkipBypass", Callback=function(state)
             LoaderSettings.SkipBypass = state;
         end};
-        {type="Toggle", EN="Scary AntiCheat", EN2="Prevent UI Assets from loading, help bypass anti cheat.", TH1="กันโปรหนา", TH2="ปิดทรัพยากรทั้งหมดใน UI เพื่อไม่ให้โดนตรวจเจอ", P="ScaryAC", Callback=function(state)
+        {type="Toggle", EN="Scary AntiCheat", EN2="Prevent UI Assets from loading, help bypass anti cheat.", PT1="AntiCheat Pesado", PT2="Evita carregar recursos da interface para ajudar a passar pelo anti-cheat.", TH1="กันโปรหนา", TH2="ปิดทรัพยากรทั้งหมดใน UI เพื่อไม่ให้โดนตรวจเจอ", P="ScaryAC", Callback=function(state)
             if tblef(SCARYAC, GameId) then return; end;
             LoaderSettings.ScaryAC = state;
         end}; {type = "Space"};
-        {type="Keybind", EN="UI Toggle Key", EN2="Key to hide/show the menu.", TH1="ปุ่มเปิด/ปิดเมนู", TH2="ปุ่มสำหรับซ่อนหรือแสดงเมนู", P="UIKeybind", Callback=function(key)
+        {type="Keybind", EN="UI Toggle Key", EN2="Key to hide/show the menu.", PT1="Tecla da Interface", PT2="Tecla para mostrar/ocultar o menu.", TH1="ปุ่มเปิด/ปิดเมนู", TH2="ปุ่มสำหรับซ่อนหรือแสดงเมนู", P="UIKeybind", Callback=function(key)
             LoaderSettings.UIKeybind = key; if ScriptCache.Window and ScriptCache.Window.SetToggleKey then
                 ScriptCache.Window:SetToggleKey(Enum.KeyCode[key] or Enum.KeyCode.RightShift);
             end
         end};
-        {type="Toggle", EN="Allow Acrylic Blur", EN2="Allow Acrylic Blur to make the UI look better.", TH1="เปิดใช้งาน Acrylic Blur", TH2="ทำให้ UI ดูสวยขึ้น", P="AllowAcrylicBlur", Callback=function(state)
+        {type="Toggle", EN="Allow Acrylic Blur", EN2="Allow Acrylic Blur to make the UI look better.", PT1="Permitir Blur Acrílico", PT2="Permitir Acrylic Blur para deixar a interface melhor.", TH1="เปิดใช้งาน Acrylic Blur", TH2="ทำให้ UI ดูสวยขึ้น", P="AllowAcrylicBlur", Callback=function(state)
             LoaderSettings.AllowAcrylicBlur = state;
         end};
-        {type="Toggle", EN="Allow Client Tab", EN2="Allow Client Tab in the UI.", TH1="เปิดใช้งานแท็บ: Client", TH2="แสดงแท็บ Client บน UI", P="AllowClientTab", Callback=function(state)
+        {type="Toggle", EN="Allow Client Tab", EN2="Allow Client Tab in the UI.", PT1="Permitir Aba Cliente", PT2="Permitir a aba Cliente na interface.", TH1="เปิดใช้งานแท็บ: Client", TH2="แสดงแท็บ Client บน UI", P="AllowClientTab", Callback=function(state)
             LoaderSettings.AllowClientTab = state;
         end};
-        {type="Toggle", EN="Allow AddOn Tab", EN2="Allow AddOn Tab in the UI.", TH1="เปิดใช้งานแท็บ: AddOn", TH2="แสดงแท็บ AddOn บน UI", P="AllowAddOn", Callback=function(state)
+        {type="Toggle", EN="Allow AddOn Tab", EN2="Allow AddOn Tab in the UI.", PT1="Permitir Aba AddOn", PT2="Permitir a aba AddOn na interface.", TH1="เปิดใช้งานแท็บ: AddOn", TH2="แสดงแท็บ AddOn บน UI", P="AllowAddOn", Callback=function(state)
             LoaderSettings.AllowAddOn = state;
         end};
-        {type="Toggle", EN="Allow Themes Tab", EN2="Allow Themes Tab in the UI.", TH1="เปิดใช้งานแท็บ: Themes", TH2="แสดงแท็บ Themes บน UI", P="AllowThemesTab", Callback=function(state)
+        {type="Toggle", EN="Allow Themes Tab", EN2="Allow Themes Tab in the UI.", PT1="Permitir Aba Temas", PT2="Permitir a aba Temas na interface.", TH1="เปิดใช้งานแท็บ: Themes", TH2="แสดงแท็บ Themes บน UI", P="AllowThemesTab", Callback=function(state)
             LoaderSettings.AllowThemesTab = state;
         end}; {type="Space"};
-        {type="Button", EN="Export Configs", EN2="Copy config to your clipboard", TH1="ส่งออก Config", TH2="คัดลอก Config", Callback=function()
+        {type="Button", EN="Export Configs", EN2="Copy config to your clipboard", PT1="Exportar Configurações", PT2="Copiar configurações para a área de transferência", TH1="ส่งออก Config", TH2="คัดลอก Config", Callback=function()
             setc("getgenv().Configs = " .. serialize(GG.Configs));
         end};
-        {type="Button", EN="Export Loader Settings", EN2="Copy loader settings to your clipboard", TH1="ส่งออก Loader Settings", TH2="คัดลอก Loader Settings", Callback=function()
+        {type="Button", EN="Export Loader Settings", EN2="Copy loader settings to your clipboard", PT1="Exportar Config. do Loader", PT2="Copiar configurações do loader para a área de transferência", TH1="ส่งออก Loader Settings", TH2="คัดลอก Loader Settings", Callback=function()
             setc("getgenv().LoaderSettings = " .. serialize(GG.LoaderSettings));
         end};
-        {type="Button", EN="Export Key-Binding", EN2="Copy Key-Binding to your clipboard", TH1="ส่งออก Key-Binding", TH2="คัดลอก Key-Binding", Callback=function()
+        {type="Button", EN="Export Key-Binding", EN2="Copy Key-Binding to your clipboard", PT1="Exportar Tecla Atalho", PT2="Copiar o Key-Binding para a área de transferência", TH1="ส่งออก Key-Binding", TH2="คัดลอก Key-Binding", Callback=function()
             setc("getgenv().BindConfigs = " .. serialize(GG.BindConfigs));
         end};
     };
 
     if GameId == 2294168059 then
         Data[#Data+1] = {type="Space"}; Data[#Data+1] = {type="Divider"}; Data[#Data+1] = {type="Space"};
-        Data[#Data+1] = {type="Toggle", EN="Load Sections", EN2="Load all teleport locations instead of just an auto complete.", TH1="โหลดส่วนขยาย", TH2="จากปกติที่จะโหลดแค่ออโต้เล่น โหลดส่วนขยายจะโหลดจุดวาปด้วย", P="TheMimicLoader", P2="Load_Sections", Callback=function(state)
+        Data[#Data+1] = {type="Toggle", EN="Load Sections", EN2="Load all teleport locations instead of just an auto complete.", PT1="Carregar Seções", PT2="Carregar todos os pontos de teleporte em vez de apenas o automático.", TH1="โหลดส่วนขยาย", TH2="จากปกติที่จะโหลดแค่ออโต้เล่น โหลดส่วนขยายจะโหลดจุดวาปด้วย", P="TheMimicLoader", P2="Load_Sections", Callback=function(state)
             LoaderSettings.TheMimicLoader.Load_Sections = state;
         end};
         Data[#Data+1] = {type="Space"}; Data[#Data+1] = {type="Divider"}; Data[#Data+1] = {type="Space"};
-        Data[#Data+1] = {type="Dropdown", EN="Installer", EN2="Select a package.", TH1="โหลดส่วนเสริม", TH2="เลือกสิ่งที่จะโหลด", Values={"Paintings", "MapComputing"}, P="TheMimicLoader", P2="Installer", Callback=function(value)
+        Data[#Data+1] = {type="Dropdown", EN="Installer", EN2="Select a package.", PT1="Instalador", PT2="Selecione um pacote.", TH1="โหลดส่วนเสริม", TH2="เลือกสิ่งที่จะโหลด", Values={"Paintings", "MapComputing"}, P="TheMimicLoader", P2="Installer", Callback=function(value)
             LoaderSettings.TheMimicLoader.Installer = value;
         end};
-        Data[#Data+1] = {type="Button", EN="Install", EN2="Download the package.", TH1="โหลด", TH2="โหลดส่วนเสริม", Callback=function(value)
+        Data[#Data+1] = {type="Button", EN="Install", EN2="Download the package.", PT1="Instalar", PT2="Baixar o pacote.", TH1="โหลด", TH2="โหลดส่วนเสริม", Callback=function(value)
             local DownloadHandler = GG.DownloadHandler; if DownloadHandler and not DownloadHandler.Download(true, LoaderSettings.TheMimicLoader.Installer) then
                 ScriptCache.WindUI:Notify({
                     Title = "<font color='rgb(255,255,0)'>Installer [IMPORTANT]</font>",
@@ -12079,19 +11887,19 @@ AssetStorage.CorePackage = function()
         end};
     elseif GameId == 1235188606 then
         Data[#Data+1] = {type="Space"}; Data[#Data+1] = {type="Divider"}; Data[#Data+1] = {type="Space"};
-        Data[#Data+1] = {type="Button", EN="Roam Initilization", EN2="This will teleport you to every chunk of the game and make it load all data.", TH1="โหลดข้อมูลเกม", TH2="จะวาปไปทุกๆส่วนของเกมและโหลดข้อมูลทั้งหมด", Callback=function()
+        Data[#Data+1] = {type="Button", EN="Roam Initilization", EN2="This will teleport you to every chunk of the game and make it load all data.", PT1="Inicialização Roam", PT2="Isso fará você se teleportar por todas as áreas do jogo para carregar todos os dados.", TH1="โหลดข้อมูลเกม", TH2="จะวาปไปทุกๆส่วนของเกมและโหลดข้อมูลทั้งหมด", Callback=function()
             return GG.InitGameData();
         end};
-        Data[#Data+1] = {type="Toggle", EN="Roam Init On StartUp", EN2="Automatically run Roam Initilization after execute.", TH1="ออโต้โหลดข้อมูลเกม", TH2="จะวาปไปทุกๆส่วนของเกมและโหลดข้อมูลทั้งหมดหลังรันสคริป", P="DragonAdventure", P2="RoamInitOnStartUp", Callback=function(state)
+        Data[#Data+1] = {type="Toggle", EN="Roam Init On StartUp", EN2="Automatically run Roam Initilization after execute.", PT1="Roam Init na Inicialização", PT2="Executar Roam Initilization automaticamente após executar.", TH1="ออโต้โหลดข้อมูลเกม", TH2="จะวาปไปทุกๆส่วนของเกมและโหลดข้อมูลทั้งหมดหลังรันสคริป", P="DragonAdventure", P2="RoamInitOnStartUp", Callback=function(state)
             LoaderSettings.DragonAdventure.RoamInitOnStartUp = state;
         end};
         Data[#Data+1] = {type="Space"}; Data[#Data+1] = {type="Divider"}; Data[#Data+1] = {type="Space"};
-        Data[#Data+1] = {type="Toggle", EN="Auto Join Private server", EN2="Give you free private server, this will auto join the private server after you teleport to other world that isn't lobby.", TH1="ออโต้เข้าPrivate server", TH2="จะวาปไป Private server ให้อัตโนมัติเมื่อไปยังแมพอื่นที่ไม่ใช่ล็อบบี้", P="DragonAdventure", P2="AutoJoinPrivateServer", Callback=function(state)
+        Data[#Data+1] = {type="Toggle", EN="Auto Join Private server", EN2="Give you free private server, this will auto join the private server after you teleport to other world that isn't lobby.", PT1="Entrar Automaticamente no Servidor Privado", PT2="Dá a você um servidor privado grátis, entrando nele automaticamente após se teleportar para outro mundo.", TH1="ออโต้เข้าPrivate server", TH2="จะวาปไป Private server ให้อัตโนมัติเมื่อไปยังแมพอื่นที่ไม่ใช่ล็อบบี้", P="DragonAdventure", P2="AutoJoinPrivateServer", Callback=function(state)
             LoaderSettings.DragonAdventure.AutoJoinPrivateServer = state;
         end};
     elseif GameId == 10200395747 then
         Data[#Data+1] = {type="Space"}; Data[#Data+1] = {type="Divider"}; Data[#Data+1] = {type="Space"};
-        Data[#Data+1] = {type="Toggle", EN="Allow TP Bypass", EN2="Instant teleport; You need to have low ping or this won't work.", TH1="วาปทันที", TH2="เวลาฟาม เวลาขโมยจะวาปทันทีแต่ต้องเน็ตแรงๆ ปิงน้อยๆ", Callback=function(state)
+        Data[#Data+1] = {type="Toggle", EN="Allow TP Bypass", EN2="Instant teleport; You need to have low ping or this won't work.", PT1="Permitir Bypass de TP", PT2="Teleporte instantâneo; você precisa de ping baixo ou isso não funcionará.", TH1="วาปทันที", TH2="เวลาฟาม เวลาขโมยจะวาปทันทีแต่ต้องเน็ตแรงๆ ปิงน้อยๆ", Callback=function(state)
             LoaderSettings.GAG2Loader.Allow_TPBypass = state;
         end};
     end;
