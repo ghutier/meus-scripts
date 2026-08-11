@@ -5,6 +5,7 @@ end
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
 local localPlayer = Players.LocalPlayer
 local camera = workspace.CurrentCamera
 
@@ -20,11 +21,11 @@ screenGui.Name = "MeuPainelScript"
 screenGui.ResetOnSpawn = false
 screenGui.Parent = playerGui
 
--- Janela Principal
+-- Janela Principal (Aumentada para caber o novo botão de voo)
 local mainFrame = Instance.new("Frame")
 mainFrame.Name = "MainFrame"
-mainFrame.Size = UDim2.new(0, 260, 0, 310)
-mainFrame.Position = UDim2.new(0.5, -130, 0.5, -155)
+mainFrame.Size = UDim2.new(0, 260, 0, 355)
+mainFrame.Position = UDim2.new(0.5, -130, 0.5, -177)
 mainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
 mainFrame.BorderSizePixel = 0
 mainFrame.Active = true
@@ -39,7 +40,7 @@ cornerMain.Parent = mainFrame
 local titleLabel = Instance.new("TextLabel")
 titleLabel.Size = UDim2.new(1, 0, 0, 40)
 titleLabel.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-titleLabel.Text = " Painel Completo 2 em 1"
+titleLabel.Text = " Painel Completo + Voo (Q/E)"
 titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 titleLabel.TextSize = 14
 titleLabel.Font = Enum.Font.GothamBold
@@ -242,7 +243,7 @@ RunService.Stepped:Connect(function()
     end
 end)
 
--- Botão 4: God Mode / Trava de Vida (Ativa/Desativa)
+-- Botão 4: God Mode Local (Ativa/Desativa)
 local btnGodMode = criarBotao(185, "God Mode Local: [OFF]")
 local godModeAtivo = false
 
@@ -269,12 +270,94 @@ RunService.Stepped:Connect(function()
     end
 end)
 
--- Botão 5: Fechar Painel
-local btnFechar = criarBotao(230, "Fechar Painel")
+-- Botão 5: Voar (Fly - Ativa/Desativa, Q sobe e E desce)
+local btnVoar = criarBotao(230, "Voar (Fly): [OFF]")
+local voarAtivo = false
+local flyConnection
+local bv, bg
+
+btnVoar.MouseButton1Click:Connect(function()
+    voarAtivo = not voarAtivo
+    local char = localPlayer.Character
+    local hrp = char and char:FindFirstChild("HumanoidRootPart")
+    local humanoid = char and char:FindFirstChildOfClass("Humanoid")
+    
+    if voarAtivo then
+        btnVoar.Text = "Voar (Fly): [ON]"
+        btnVoar.BackgroundColor3 = Color3.fromRGB(0, 170, 0)
+        
+        if hrp and humanoid then
+            humanoid.PlatformStand = true
+            
+            bv = Instance.new("BodyVelocity")
+            bv.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+            bv.Velocity = Vector3.new(0, 0, 0)
+            bv.Parent = hrp
+            
+            bg = Instance.new("BodyGyro")
+            bg.MaxTorque = Vector3.new(math.huge, math.huge, math.huge)
+            bg.CFrame = hrp.CFrame
+            bg.Parent = hrp
+            
+            flyConnection = RunService.RenderStepped:Connect(function()
+                if not char or not hrp or not humanoid then return end
+                bg.CFrame = camera.CFrame
+                
+                local moveDir = Vector3.new(0, 0, 0)
+                local lookV = camera.CFrame.LookVector
+                local rightV = camera.CFrame.RightVector
+                
+                -- Movimentação por teclas W, A, S, D
+                if UserInputService:IsKeyDown(Enum.KeyCode.W) then
+                    moveDir = moveDir + lookV
+                end
+                if UserInputService:IsKeyDown(Enum.KeyCode.S) then
+                    moveDir = moveDir - lookV
+                end
+                if UserInputService:IsKeyDown(Enum.KeyCode.A) then
+                    moveDir = moveDir - rightV
+                end
+                if UserInputService:IsKeyDown(Enum.KeyCode.D) then
+                    moveDir = moveDir + rightV
+                end
+                
+                -- Q Sobe, E Desce
+                if UserInputService:IsKeyDown(Enum.KeyCode.Q) then
+                    moveDir = moveDir + Vector3.new(0, 1, 0)
+                end
+                if UserInputService:IsKeyDown(Enum.KeyCode.E) then
+                    moveDir = moveDir - Vector3.new(0, 1, 0)
+                end
+                
+                bv.Velocity = moveDir * 50
+            end)
+        end
+    else
+        btnVoar.Text = "Voar (Fly): [OFF]"
+        btnVoar.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+        
+        if flyConnection then flyConnection:Disconnect() end
+        if bv then bv:Destroy() end
+        if bg then bg:Destroy() end
+        
+        if char then
+            local humanoid = char:FindFirstChildOfClass("Humanoid")
+            if humanoid then
+                humanoid.PlatformStand = false
+            end
+        end
+    end
+end)
+
+-- Botão 6: Fechar Painel
+local btnFechar = criarBotao(275, "Fechar Painel")
 btnFechar.BackgroundColor3 = Color3.fromRGB(170, 0, 0)
 btnFechar.MouseButton1Click:Connect(function()
     limparEsp()
+    if flyConnection then flyConnection:Disconnect() end
+    if bv then bv:Destroy() end
+    if bg then bg:Destroy() end
     screenGui:Destroy()
 end)
 
-print("Painel Completo 2 em 1 carregado com sucesso!")
+print("Painel completo com Voo (Q/E) carregado com sucesso!")
