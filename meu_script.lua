@@ -1,7 +1,7 @@
---[[
-    Loadstring for beating The Mimic - Fully featured script with auto win, auto kill, auto tp, escape, fullbright, auto clicks, ESP, emotes with songs, fly toggle, respawn, monster deletion, no keys
-    Usage: paste into a LocalScript or execute via loadstring in Roblox Studio or executor.
-]]
+-- Garante que o jogo carregou completamente
+if not game:IsLoaded() then
+    game.Loaded:Wait()
+end
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
@@ -12,59 +12,177 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Workspace = game:GetService("Workspace")
 
 local LocalPlayer = Players.LocalPlayer
-local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
-local Humanoid = Character:WaitForChild("Humanoid")
-local RootPart = Character:WaitForChild("HumanoidRootPart")
+local camera = workspace.CurrentCamera
 
--- Settings
+-- Remove um painel antigo caso você execute o script duas vezes
+local playerGui = LocalPlayer:WaitForChild("PlayerGui")
+if playerGui:FindFirstChild("MimicPainelScript") then
+    playerGui.MimicPainelScript:Destroy()
+end
+
+-- 1. Criação da Interface (GUI)
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "MimicPainelScript"
+screenGui.ResetOnSpawn = false
+screenGui.Parent = playerGui
+
+-- Janela Principal
+local mainFrame = Instance.new("Frame")
+mainFrame.Name = "MainFrame"
+mainFrame.Size = UDim2.new(0, 260, 0, 410)
+mainFrame.Position = UDim2.new(0.5, -130, 0.5, -205)
+mainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+mainFrame.BorderSizePixel = 0
+mainFrame.Active = true
+mainFrame.Draggable = true
+mainFrame.Parent = screenGui
+
+local cornerMain = Instance.new("UICorner")
+cornerMain.CornerRadius = UDim.new(0, 8)
+cornerMain.Parent = mainFrame
+
+-- Barra de Título
+local titleLabel = Instance.new("TextLabel")
+titleLabel.Size = UDim2.new(1, 0, 0, 40)
+titleLabel.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+titleLabel.Text = " Painel The Mimic"
+titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+titleLabel.TextSize = 14
+titleLabel.Font = Enum.Font.GothamBold
+titleLabel.TextXAlignment = Enum.TextXAlignment.Left
+titleLabel.Parent = mainFrame
+
+local cornerTitle = Instance.new("UICorner")
+cornerTitle.CornerRadius = UDim.new(0, 8)
+cornerTitle.Parent = titleLabel
+
+-- Ícone Flutuante para reabrir quando minimizado
+local openButton = Instance.new("TextButton")
+openButton.Name = "OpenButton"
+openButton.Size = UDim2.new(0, 45, 0, 45)
+openButton.Position = UDim2.new(0, 20, 0.5, -22)
+openButton.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+openButton.TextColor3 = Color3.fromRGB(0, 255, 128)
+openButton.Text = "👁️"
+openButton.TextSize = 20
+openButton.Visible = false
+openButton.Active = true
+openButton.Draggable = true
+openButton.Parent = screenGui
+
+local cornerOpen = Instance.new("UICorner")
+cornerOpen.CornerRadius = UDim.new(1, 0)
+cornerOpen.Parent = openButton
+
+-- Botão Minimizar (-)
+local btnMinimize = Instance.new("TextButton")
+btnMinimize.Size = UDim2.new(0, 30, 0, 30)
+btnMinimize.Position = UDim2.new(1, -35, 0, 5)
+btnMinimize.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+btnMinimize.TextColor3 = Color3.fromRGB(255, 255, 255)
+btnMinimize.Text = "-"
+btnMinimize.TextSize = 16
+btnMinimize.Font = Enum.Font.GothamBold
+btnMinimize.Parent = titleLabel
+
+local cornerMin = Instance.new("UICorner")
+cornerMin.CornerRadius = UDim.new(0, 6)
+cornerMin.Parent = btnMinimize
+
+btnMinimize.MouseButton1Click:Connect(function()
+    mainFrame.Visible = false
+    openButton.Visible = true
+end)
+
+openButton.MouseButton1Click:Connect(function()
+    mainFrame.Visible = true
+    openButton.Visible = false
+end)
+
+-- Função de Botão Padrão
+local function criarBotao(posicaoY, textoInicial)
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(0, 220, 0, 32)
+    btn.Position = UDim2.new(0.5, -110, 0, posicaoY)
+    btn.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    btn.Text = textoInicial
+    btn.TextSize = 13
+    btn.Font = Enum.Font.GothamMedium
+    btn.Parent = mainFrame
+
+    local cornerBtn = Instance.new("UICorner")
+    cornerBtn.CornerRadius = UDim.new(0, 6)
+    cornerBtn.Parent = btn
+
+    return btn
+end
+
+-- Configurações e Estados
 local Settings = {
-    AutoWin = true,
-    AutoKill = true,
-    AutoTP = true,
-    AutoEscape = true,
-    FullBright = true,
-    AutoClicks = true,
-    ESP = true,
-    EmotesWithSongs = true,
-    FlyToggleKey = Enum.KeyCode.F,
-    Respawn = true,
-    DeleteMonsters = true,
-    NoKeys = true,
+    AutoWin = false,
+    AutoKill = false,
+    AutoTP = false,
+    AutoEscape = false,
+    FullBright = false,
+    AutoClicks = false,
+    ESP = false,
+    DeleteMonsters = false,
+    NoKeys = false,
 }
 
--- Variables
 local FlyEnabled = false
 local FlySpeed = 50
 local FlyBodyVelocity = nil
 local FlyBodyGyro = nil
 
--- Utility Functions
+-- Funções Utilitárias do Código Original
+local function getRootPart()
+    local char = LocalPlayer.Character
+    return char and char:FindFirstChild("HumanoidRootPart")
+end
+
+local function getHumanoid()
+    local char = LocalPlayer.Character
+    return char and char:FindFirstChildOfClass("Humanoid")
+end
+
 local function tpTo(partOrCFrame)
+    local rootPart = getRootPart()
+    if not rootPart then return end
     if typeof(partOrCFrame) == "Instance" and partOrCFrame:IsA("BasePart") then
-        RootPart.CFrame = partOrCFrame.CFrame + Vector3.new(0, 5, 0)
+        rootPart.CFrame = partOrCFrame.CFrame + Vector3.new(0, 5, 0)
     elseif typeof(partOrCFrame) == "CFrame" then
-        RootPart.CFrame = partOrCFrame + Vector3.new(0, 5, 0)
+        rootPart.CFrame = partOrCFrame + Vector3.new(0, 5, 0)
     end
 end
 
-local function safeTweenTo(pos)
-    local tweenInfo = TweenInfo.new(1, Enum.EasingStyle.Linear)
-    local tween = TweenService:Create(RootPart, tweenInfo, {CFrame = CFrame.new(pos) * CFrame.new(0, 5, 0)})
-    tween:Play()
-    tween.Completed:Wait()
-end
+-- Botão 1: FullBright
+local btnFullBright = criarBotao(50, "FullBright: [OFF]")
+btnFullBright.MouseButton1Click:Connect(function()
+    Settings.FullBright = not Settings.FullBright
+    if Settings.FullBright then
+        btnFullBright.Text = "FullBright: [ON]"
+        btnFullBright.BackgroundColor3 = Color3.fromRGB(0, 170, 0)
+        Lighting.ClockTime = 14
+        Lighting.Brightness = 2
+        Lighting.GlobalShadows = false
+        Lighting.FogEnd = 100000
+    else
+        btnFullBright.Text = "FullBright: [OFF]"
+        btnFullBright.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+        Lighting.GlobalShadows = true
+        Lighting.FogEnd = 10000
+    end
+end)
 
--- FullBright Implementation
-if Settings.FullBright then
-    Lighting.ClockTime = 14
-    Lighting.Brightness = 2
-    Lighting.GlobalShadows = false
-    Lighting.FogEnd = 100000
-end
+-- Botão 2: ESP (Monstros e Jogadores)[cite: 1]
+local btnEsp = criarBotao(87, "ESP Monstros/Players: [OFF]")
+local ESPMonsters = {}
+local ESPPlayers = {}
 
--- ESP Implementation
 local function createESP(target)
-    if target:FindFirstChild("HumanoidRootPart") then
+    if target:FindFirstChild("HumanoidRootPart") and not target.HumanoidRootPart:FindFirstChild("BoxHandleAdornment") then
         local box = Instance.new("BoxHandleAdornment")
         box.Adornee = target.HumanoidRootPart
         box.AlwaysOnTop = true
@@ -78,12 +196,27 @@ local function createESP(target)
     return nil
 end
 
-local ESPMonsters = {}
-local ESPPlayers = {}
+local function limparEsp()
+    for _, box in pairs(ESPMonsters) do if box then box:Destroy() end end
+    for _, box in pairs(ESPPlayers) do if box then box:Destroy() end end
+    ESPMonsters = {}
+    ESPPlayers = {}
+end
 
-if Settings.ESP then
-    -- ESP for monsters (assumed monsters are under Workspace.Monsters or similar)
-    local function addESPForMonsters()
+btnEsp.MouseButton1Click:Connect(function()
+    Settings.ESP = not Settings.ESP
+    if Settings.ESP then
+        btnEsp.Text = "ESP Monstros/Players: [ON]"
+        btnEsp.BackgroundColor3 = Color3.fromRGB(0, 170, 0)
+    else
+        btnEsp.Text = "ESP Monstros/Players: [OFF]"
+        btnEsp.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+        limparEsp()
+    end
+end)
+
+RunService.Heartbeat:Connect(function()
+    if Settings.ESP then
         local monstersFolder = Workspace:FindFirstChild("Monsters") or Workspace:FindFirstChild("Monster")
         if monstersFolder then
             for _, monster in pairs(monstersFolder:GetChildren()) do
@@ -92,220 +225,198 @@ if Settings.ESP then
                 end
             end
         end
-    end
-
-    -- ESP for players
-    local function addESPForPlayers()
         for _, player in pairs(Players:GetPlayers()) do
             if player ~= LocalPlayer and player.Character and not ESPPlayers[player] then
                 ESPPlayers[player] = createESP(player.Character)
             end
         end
     end
+end)
 
-    -- Refresh ESP periodically
-    RunService.Heartbeat:Connect(function()
-        if Settings.ESP then
-            addESPForMonsters()
-            addESPForPlayers()
-        end
-    end)
-end
-
--- Auto Win / Auto TP / Auto Kill / Auto Clicks / Auto Escape Implementation
--- These depend highly on the game's structure. Below is a generic approach that tries to cover typical objectives in The Mimic chapters.
--- Adjust paths/names/events as per the actual game.
-
-local MimicFolder = Workspace:WaitForChild("Mimic") or Workspace -- Adjust if needed
-
-local function autoWinCurrentObjective()
-    -- Teleport to objective part or trigger objective completion
-    -- Example: find an objective part by name and teleport to it
-    local objective = Workspace:FindFirstChild("Objective") or Workspace:FindFirstChild("ObjectivePart")
-    if objective then
-        tpTo(objective)
-        wait(0.5)
-        -- Try to fire touch event or simulate interaction if needed
-        -- This depends on the game implementation, so simulate click or fire remote events if accessible
+-- Botão 3: Auto Win (Objetivo)[cite: 1]
+local btnAutoWin = criarBotao(124, "Auto Win (Objetivo): [OFF]")
+btnAutoWin.MouseButton1Click:Connect(function()
+    Settings.AutoWin = not Settings.AutoWin
+    if Settings.AutoWin then
+        btnAutoWin.Text = "Auto Win (Objetivo): [ON]"
+        btnAutoWin.BackgroundColor3 = Color3.fromRGB(0, 170, 0)
+    else
+        btnAutoWin.Text = "Auto Win (Objetivo): [OFF]"
+        btnAutoWin.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
     end
-end
+end)
 
-local function autoKillBosses()
-    -- Try to delete or kill boss monsters
-    local monstersFolder = Workspace:FindFirstChild("Monsters") or Workspace:FindFirstChild("Monster")
-    if monstersFolder then
-        for _, monster in pairs(monstersFolder:GetChildren()) do
-            if monster:FindFirstChild("Humanoid") then
-                monster.Humanoid.Health = 0
-            end
-        end
+-- Botão 4: Auto Kill Bosses[cite: 1]
+local btnAutoKill = criarBotao(161, "Auto Kill Monstros: [OFF]")
+btnAutoKill.MouseButton1Click:Connect(function()
+    Settings.AutoKill = not Settings.AutoKill
+    if Settings.AutoKill then
+        btnAutoKill.Text = "Auto Kill Monstros: [ON]"
+        btnAutoKill.BackgroundColor3 = Color3.fromRGB(0, 170, 0)
+    else
+        btnAutoKill.Text = "Auto Kill Monstros: [OFF]"
+        btnAutoKill.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
     end
-end
+end)
 
-local function autoTPToNextPart()
-    -- Teleport to next trigger part to activate next cutscene
-    local triggersFolder = Workspace:FindFirstChild("Triggers") or Workspace:FindFirstChild("CutsceneTriggers")
-    if triggersFolder then
-        for _, trigger in pairs(triggersFolder:GetChildren()) do
-            if trigger:IsA("BasePart") then
-                tpTo(trigger)
-                wait(0.5)
-            end
-        end
+-- Botão 5: Auto Escape[cite: 1]
+local btnAutoEscape = criarBotao(198, "Fuga Automática (<20m): [OFF]")
+btnAutoEscape.MouseButton1Click:Connect(function()
+    Settings.AutoEscape = not Settings.AutoEscape
+    if Settings.AutoEscape then
+        btnAutoEscape.Text = "Fuga Automática (<20m): [ON]"
+        btnAutoEscape.BackgroundColor3 = Color3.fromRGB(0, 170, 0)
+    else
+        btnAutoEscape.Text = "Fuga Automática (<20m): [OFF]"
+        btnAutoEscape.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
     end
-end
+end)
 
-local function autoEscapeFromMonster()
-    -- Detect monsters near player and teleport away instantly
-    local monstersFolder = Workspace:FindFirstChild("Monsters") or Workspace:FindFirstChild("Monster")
-    if monstersFolder then
-        for _, monster in pairs(monstersFolder:GetChildren()) do
-            if monster:FindFirstChild("HumanoidRootPart") then
-                local dist = (RootPart.Position - monster.HumanoidRootPart.Position).Magnitude
-                if dist < 20 then -- monster chase proximity threshold
-                    -- Teleport far away
-                    tpTo(CFrame.new(0, 50, 0))
-                    wait(0.5)
-                end
-            end
-        end
+-- Botão 6: Deletar Monstros[cite: 1]
+local btnDeleteMonsters = criarBotao(235, "Deletar Monstros Mapa: [OFF]")
+btnDeleteMonsters.MouseButton1Click:Connect(function()
+    Settings.DeleteMonsters = not Settings.DeleteMonsters
+    if Settings.DeleteMonsters then
+        btnDeleteMonsters.Text = "Deletar Monstros Mapa: [ON]"
+        btnDeleteMonsters.BackgroundColor3 = Color3.fromRGB(0, 170, 0)
+    else
+        btnDeleteMonsters.Text = "Deletar Monstros Mapa: [OFF]"
+        btnDeleteMonsters.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
     end
-end
+end)
 
-local function autoClicks()
-    -- Auto click interactive parts / escape monster cutscenes
-    -- Example: click all ClickDetectors in workspace
-    for _, clickDetector in pairs(Workspace:GetDescendants()) do
-        if clickDetector:IsA("ClickDetector") then
-            clickDetector:Click()
-            wait(0.1)
-        end
+-- Botão 7: Sem Chaves (No Keys)[cite: 1]
+local btnNoKeys = criarBotao(272, "Remover Chaves (NoKeys): [OFF]")
+btnNoKeys.MouseButton1Click:Connect(function()
+    Settings.NoKeys = not Settings.NoKeys
+    if Settings.NoKeys then
+        btnNoKeys.Text = "Remover Chaves (NoKeys): [ON]"
+        btnNoKeys.BackgroundColor3 = Color3.fromRGB(0, 170, 0)
+    else
+        btnNoKeys.Text = "Remover Chaves (NoKeys): [OFF]"
+        btnNoKeys.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
     end
-end
+end)
 
--- Emotes with songs feature (simplified)
-local function playEmoteWithSong()
-    -- Assuming mimic emotes are replicated in ReplicatedStorage.Emotes or similar
-    local emotesFolder = ReplicatedStorage:FindFirstChild("Emotes")
-    local emoteRemote = ReplicatedStorage:FindFirstChild("PlayEmote") or ReplicatedStorage:FindFirstChild("EmoteRemote")
-    local soundFolder = ReplicatedStorage:FindFirstChild("EmoteSounds")
+-- Botão 8: Voar (Fly - com suporte a Q e E)
+local btnVoar = criarBotao(309, "Voar (Q/E): [OFF]")
+local flyConnection
 
-    if emotesFolder and emoteRemote and soundFolder then
-        for _, emote in pairs(emotesFolder:GetChildren()) do
-            if emote:IsA("StringValue") then
-                -- Fire emote event
-                emoteRemote:FireServer(emote.Value)
-                -- Play sound if exists
-                local sound = soundFolder:FindFirstChild(emote.Value)
-                if sound then
-                    local soundClone = sound:Clone()
-                    soundClone.Parent = LocalPlayer.Character
-                    soundClone:Play()
-                    soundClone.Ended:Wait()
-                    soundClone:Destroy()
-                end
-                wait(1)
-            end
-        end
-    end
-end
-
--- Fly toggle implementation
-local function toggleFly()
+btnVoar.MouseButton1Click:Connect(function()
+    FlyEnabled = not FlyEnabled
+    local rootPart = getRootPart()
+    local humanoid = getHumanoid()
+    
     if FlyEnabled then
-        FlyEnabled = false
+        btnVoar.Text = "Voar (Q/E): [ON]"
+        btnVoar.BackgroundColor3 = Color3.fromRGB(0, 170, 0)
+        
+        if rootPart and humanoid then
+            humanoid.PlatformStand = true
+            FlyBodyVelocity = Instance.new("BodyVelocity")
+            FlyBodyVelocity.Velocity = Vector3.new(0, 0, 0)
+            FlyBodyVelocity.MaxForce = Vector3.new(1e5, 1e5, 1e5)
+            FlyBodyVelocity.Parent = rootPart
+            
+            FlyBodyGyro = Instance.new("BodyGyro")
+            FlyBodyGyro.MaxTorque = Vector3.new(1e5, 1e5, 1e5)
+            FlyBodyGyro.CFrame = rootPart.CFrame
+            FlyBodyGyro.Parent = rootPart
+            
+            flyConnection = RunService.Heartbeat:Connect(function()
+                if not FlyEnabled or not rootPart then return end
+                local moveDir = Vector3.new()
+                if UserInputService:IsKeyDown(Enum.KeyCode.W) then moveDir = moveDir + camera.CFrame.LookVector end
+                if UserInputService:IsKeyDown(Enum.KeyCode.S) then moveDir = moveDir - camera.CFrame.LookVector end
+                if UserInputService:IsKeyDown(Enum.KeyCode.A) then moveDir = moveDir - camera.CFrame.RightVector end
+                if UserInputService:IsKeyDown(Enum.KeyCode.D) then moveDir = moveDir + camera.CFrame.RightVector end
+                if UserInputService:IsKeyDown(Enum.KeyCode.Q) then moveDir = moveDir + Vector3.new(0, 1, 0) end -- Sobe com Q
+                if UserInputService:IsKeyDown(Enum.KeyCode.E) then moveDir = moveDir - Vector3.new(0, 1, 0) end -- Desce com E
+                
+                FlyBodyVelocity.Velocity = moveDir.Unit * FlySpeed
+                FlyBodyGyro.CFrame = camera.CFrame
+            end)
+        end
+    else
+        btnVoar.Text = "Voar (Q/E): [OFF]"
+        btnVoar.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+        if flyConnection then flyConnection:Disconnect() end
         if FlyBodyVelocity then FlyBodyVelocity:Destroy() end
         if FlyBodyGyro then FlyBodyGyro:Destroy() end
-        Humanoid.PlatformStand = false
-    else
-        FlyEnabled = true
-        FlyBodyVelocity = Instance.new("BodyVelocity", RootPart)
-        FlyBodyVelocity.Velocity = Vector3.new(0, 0, 0)
-        FlyBodyVelocity.MaxForce = Vector3.new(1e5, 1e5, 1e5)
-        FlyBodyGyro = Instance.new("BodyGyro", RootPart)
-        FlyBodyGyro.MaxTorque = Vector3.new(1e5, 1e5, 1e5)
-        Humanoid.PlatformStand = true
-    end
-end
-
-UserInputService.InputBegan:Connect(function(input, gameProcessedEvent)
-    if gameProcessedEvent then return end
-    if input.KeyCode == Settings.FlyToggleKey then
-        toggleFly()
+        if humanoid then humanoid.PlatformStand = false end
     end
 end)
 
--- Fly control update
-RunService.Heartbeat:Connect(function()
-    if FlyEnabled then
-        local moveDirection = Vector3.new()
-        if UserInputService:IsKeyDown(Enum.KeyCode.W) then moveDirection = moveDirection + workspace.CurrentCamera.CFrame.LookVector end
-        if UserInputService:IsKeyDown(Enum.KeyCode.S) then moveDirection = moveDirection - workspace.CurrentCamera.CFrame.LookVector end
-        if UserInputService:IsKeyDown(Enum.KeyCode.A) then moveDirection = moveDirection - workspace.CurrentCamera.CFrame.RightVector end
-        if UserInputService:IsKeyDown(Enum.KeyCode.D) then moveDirection = moveDirection + workspace.CurrentCamera.CFrame.RightVector end
-        if UserInputService:IsKeyDown(Enum.KeyCode.Space) then moveDirection = moveDirection + Vector3.new(0,1,0) end
-        if UserInputService:IsKeyDown(Enum.KeyCode.LeftControl) then moveDirection = moveDirection - Vector3.new(0,1,0) end
-
-        FlyBodyVelocity.Velocity = moveDirection.Unit * FlySpeed
-        FlyBodyGyro.CFrame = workspace.CurrentCamera.CFrame
-    end
+-- Botão 9: Fechar Painel
+local btnFechar = criarBotao(346, "Fechar Painel")
+btnFechar.BackgroundColor3 = Color3.fromRGB(170, 0, 0)
+btnFechar.MouseButton1Click:Connect(function()
+    limparEsp()
+    if flyConnection then flyConnection:Disconnect() end
+    if FlyBodyVelocity then FlyBodyVelocity:Destroy() end
+    if FlyBodyGyro then FlyBodyGyro:Destroy() end
+    screenGui:Destroy()
 end)
 
--- Respawn Implementation
-if Settings.Respawn then
-    LocalPlayer.CharacterAdded:Connect(function(char)
-        Character = char
-        Humanoid = char:WaitForChild("Humanoid")
-        RootPart = char:WaitForChild("HumanoidRootPart")
-    end)
-end
-
-local function respawnPlayer()
-    LocalPlayer:LoadCharacter()
-end
-
--- Delete monster rigs/models
-local function deleteMonsters()
-    local monstersFolder = Workspace:FindFirstChild("Monsters") or Workspace:FindFirstChild("Monster")
-    if monstersFolder then
-        for _, monster in pairs(monstersFolder:GetChildren()) do
-            monster:Destroy()
-        end
-    end
-end
-
--- No keys - remove key requirements if possible
-local function removeKeys()
-    local keysFolder = Workspace:FindFirstChild("Keys") or Workspace:FindFirstChild("KeyItems")
-    if keysFolder then
-        for _, key in pairs(keysFolder:GetChildren()) do
-            key:Destroy()
-        end
-    end
-end
-
--- Main loop
-spawn(function()
+-- Loop principal executando as funções automáticas ativadas no painel
+task.spawn(function()
     while true do
-        if Settings.AutoWin then autoWinCurrentObjective() end
-        if Settings.AutoKill then autoKillBosses() end
-        if Settings.AutoTP then autoTPToNextPart() end
-        if Settings.AutoEscape then autoEscapeFromMonster() end
-        if Settings.AutoClicks then autoClicks() end
-        if Settings.DeleteMonsters then deleteMonsters() end
-        if Settings.NoKeys then removeKeys() end
-        wait(1)
+        task.wait(1)
+        
+        -- Auto Win / Objetivo[cite: 1]
+        if Settings.AutoWin then
+            local objective = Workspace:FindFirstChild("Objective") or Workspace:FindFirstChild("ObjectivePart")
+            if objective then tpTo(objective) end
+        end
+        
+        -- Auto Kill Monstros[cite: 1]
+        if Settings.AutoKill then
+            local monstersFolder = Workspace:FindFirstChild("Monsters") or Workspace:FindFirstChild("Monster")
+            if monstersFolder then
+                for _, monster in pairs(monstersFolder:GetChildren()) do
+                    local hum = monster:FindFirstChildOfClass("Humanoid")
+                    if hum then hum.Health = 0 end
+                end
+            end
+        end
+        
+        -- Auto Escape (Fuga se monstro < 20m)[cite: 1]
+        if Settings.AutoEscape then
+            local rootPart = getRootPart()
+            local monstersFolder = Workspace:FindFirstChild("Monsters") or Workspace:FindFirstChild("Monster")
+            if rootPart and monstersFolder then
+                for _, monster in pairs(monstersFolder:GetChildren()) do
+                    local mRoot = monster:FindFirstChild("HumanoidRootPart")
+                    if mRoot then
+                        local dist = (rootPart.Position - mRoot.Position).Magnitude
+                        if dist < 20 then
+                            tpTo(CFrame.new(0, 50, 0))
+                        end
+                    end
+                end
+            end
+        end
+        
+        -- Deletar Monstros[cite: 1]
+        if Settings.DeleteMonsters then
+            local monstersFolder = Workspace:FindFirstChild("Monsters") or Workspace:FindFirstChild("Monster")
+            if monstersFolder then
+                for _, monster in pairs(monstersFolder:GetChildren()) do
+                    monster:Destroy()
+                end
+            end
+        end
+        
+        -- Remover Chaves[cite: 1]
+        if Settings.NoKeys then
+            local keysFolder = Workspace:FindFirstChild("Keys") or Workspace:FindFirstChild("KeyItems")
+            if keysFolder then
+                for _, key in pairs(keysFolder:GetChildren()) do
+                    key:Destroy()
+                end
+            end
+        end
     end
 end)
 
--- Optional: Trigger emotes with songs on demand
-if Settings.EmotesWithSongs then
-    spawn(function()
-        while true do
-            playEmoteWithSong()
-            wait(10)
-        end
-    end)
-end
-
-print("The Mimic helper script loaded. Press "..Settings.FlyToggleKey.Name.." to toggle fly.")
+print("Painel completo do The Mimic carregado com sucesso!")
