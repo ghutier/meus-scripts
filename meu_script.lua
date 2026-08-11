@@ -23,8 +23,8 @@ screenGui.Parent = playerGui
 -- Janela Principal
 local mainFrame = Instance.new("Frame")
 mainFrame.Name = "MainFrame"
-mainFrame.Size = UDim2.new(0, 260, 0, 265)
-mainFrame.Position = UDim2.new(0.5, -130, 0.5, -132)
+mainFrame.Size = UDim2.new(0, 260, 0, 310)
+mainFrame.Position = UDim2.new(0.5, -130, 0.5, -155)
 mainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
 mainFrame.BorderSizePixel = 0
 mainFrame.Active = true
@@ -39,7 +39,7 @@ cornerMain.Parent = mainFrame
 local titleLabel = Instance.new("TextLabel")
 titleLabel.Size = UDim2.new(1, 0, 0, 40)
 titleLabel.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-titleLabel.Text = " Anti-Mimic (Fuga Automática)"
+titleLabel.Text = " Painel Completo 2 em 1"
 titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 titleLabel.TextSize = 14
 titleLabel.Font = Enum.Font.GothamBold
@@ -198,7 +198,7 @@ RunService.RenderStepped:Connect(function()
     end
 end)
 
--- Botão 3: Fuga Automática com Atravessamento (Ativa/Desativa)
+-- Botão 3: Fuga Automática (Ativa/Desativa)
 local btnFugaAuto = criarBotao(140, "Fuga Automática: [OFF]")
 local fugaAutoAtiva = false
 
@@ -213,7 +213,6 @@ btnFugaAuto.MouseButton1Click:Connect(function()
     end
 end)
 
--- Lógica contínua da Fuga Automática (Desliga colisão e teleporta o jogador para trás do monstro atravessando tudo)
 RunService.Stepped:Connect(function()
     if not fugaAutoAtiva then return end
     
@@ -221,14 +220,12 @@ RunService.Stepped:Connect(function()
     local hrp = char and char:FindFirstChild("HumanoidRootPart")
     if not hrp then return end
     
-    -- Desativa a colisão do player automaticamente enquanto a fuga estiver ligada para atravessar paredes
     for _, part in ipairs(char:GetDescendants()) do
         if part:IsA("BasePart") then
             part.CanCollide = false
         end
     end
     
-    -- Procura se há algum monstro a menos de 20 metros
     for _, obj in ipairs(workspace:GetDescendants()) do
         if obj:IsA("Model") and obj ~= char then
             local humanoid = obj:FindFirstChildOfClass("Humanoid")
@@ -238,7 +235,6 @@ RunService.Stepped:Connect(function()
                 local distancia = (hrp.Position - enemyRoot.Position).Magnitude
                 
                 if distancia < 20 then
-                    -- Joga o player 40 blocos para trás da direção que o monstro está olhando (ou para longe)
                     hrp.CFrame = hrp.CFrame + (enemyRoot.CFrame.LookVector * -45) + Vector3.new(0, 15, 0)
                 end
             end
@@ -246,12 +242,39 @@ RunService.Stepped:Connect(function()
     end
 end)
 
--- Botão 4: Fechar Painel
-local btnFechar = criarBotao(185, "Fechar Painel")
+-- Botão 4: God Mode / Trava de Vida (Ativa/Desativa)
+local btnGodMode = criarBotao(185, "God Mode Local: [OFF]")
+local godModeAtivo = false
+
+btnGodMode.MouseButton1Click:Connect(function()
+    godModeAtivo = not godModeAtivo
+    if godModeAtivo then
+        btnGodMode.Text = "God Mode Local: [ON]"
+        btnGodMode.BackgroundColor3 = Color3.fromRGB(0, 170, 0)
+    else
+        btnGodMode.Text = "God Mode Local: [OFF]"
+        btnGodMode.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+    end
+end)
+
+RunService.Stepped:Connect(function()
+    if not godModeAtivo then return end
+    
+    local char = localPlayer.Character
+    if char then
+        local humanoid = char:FindFirstChildOfClass("Humanoid")
+        if humanoid then
+            humanoid.Health = humanoid.MaxHealth
+        end
+    end
+end)
+
+-- Botão 5: Fechar Painel
+local btnFechar = criarBotao(230, "Fechar Painel")
 btnFechar.BackgroundColor3 = Color3.fromRGB(170, 0, 0)
 btnFechar.MouseButton1Click:Connect(function()
     limparEsp()
     screenGui:Destroy()
 end)
 
-print("Painel com Fuga Automática Inteligente carregado!")
+print("Painel Completo 2 em 1 carregado com sucesso!")
