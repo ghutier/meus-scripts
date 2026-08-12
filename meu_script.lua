@@ -1,3 +1,20 @@
+
+-- Força a ignorar a Key e pula direto para o carregamento do Hub
+if GG then
+    GG.InKey = function()
+        -- Retorna verdadeiro para simular que a Key foi aceita
+        return true
+    end
+    -- Se houver uma função de carregamento seguro, chame-la diretamente
+    if GG.LSecureLoad then
+        return GG.LSecureLoad()
+    end
+end
+
+
+
+
+
 if not game:IsLoaded() then game.Loaded:Wait(); end;
 -- debug.setmemorycategory("CoreMemory") --
 
@@ -12021,3 +12038,20 @@ elseif KeyLoad[GameId] then
 else
     return LoadFromVControl("https://raw.githubusercontent.com/RealTTJY/Studio.Hub/refs/heads/main/ListFile/7597195391.lua", "7597195391.lua", GG.CustomVersion or FreeLoad[7597195391].Version)(AutoInclude(FreeLoad[7597195391].Included))();
 end;
+
+
+
+
+if GG.LSecureLoad then
+    return GG.LSecureLoad();
+elseif GG.InKey then
+    -- Pula a verificação de key e força o carregamento
+    return true; 
+end;
+
+
+
+
+
+
+
