@@ -1,16 +1,27 @@
+-- ==========================================
+-- BYPASS DEFINITIVO DA KEY (TTJY Studio)
+-- ==========================================
+task.spawn(function()
+    pcall(function()
+        -- Procura e remove qualquer elemento de interface de Key existente na tela
+        for _, v in pairs(game:GetService("CoreGui"):GetDescendants()) do
+            if v:IsA("TextLabel") and (v.Text:find("Authentication") or v.Text:find("Linkvertise")) then
+                if v.Parent and v.Parent.Parent then
+                    v.Parent.Parent:Destroy() -- Destrói a janela inteira
+                end
+            end
+        end
+        for _, v in pairs(game:GetService("Players").LocalPlayer.PlayerGui:GetDescendants()) do
+            if v:IsA("TextLabel") and (v.Text:find("Authentication") or v.Text:find("Linkvertise")) then
+                if v.Parent and v.Parent.Parent then
+                    v.Parent.Parent:Destroy()
+                end
+            end
+        end
+    end)
+end)
 
--- Força a ignorar a Key e pula direto para o carregamento do Hub
-if GG then
-    GG.InKey = function()
-        -- Retorna verdadeiro para simular que a Key foi aceita
-        return true
-    end
-    -- Se houver uma função de carregamento seguro, chame-la diretamente
-    if GG.LSecureLoad then
-        return GG.LSecureLoad()
-    end
-end
-
+-- Deixe o restante do script original do TTJY Studio logo abaixo daqui...
 
 
 
