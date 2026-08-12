@@ -39,7 +39,7 @@ local Kicks, KickReason, GG = {
     ["TTJY_IDP"]  = "[TTJY Studio] : You are in public server but you set the script to auto leave public servers.";
     ["TTJY_SolD"] = "[TTJY Studio] : Compatibility with Solara has been removed.\n\n<font size=\"14\">( You can get a free executor at https://projectreal.gg/ )</font>",
     ["TTJY_INFO"] = "[TTJY Studio] : getinfo not found. Please change executor.",
-    ["TTJY_IDXO"] = "Your executor is '<b>Xeno</b>'. Imagine using a virus.\n\nAnyway, This executor isn't supported.\n\n<font size=\"14\">Visit ttjy-studio.vercel.app to see the list of supported executors.</font>",
+   -- ["TTJY_IDXO"] = "Your executor is '<b>Xeno</b>'. Imagine using a virus.\n\nAnyway, This executor isn't supported.\n\n<font size=\"14\">Visit ttjy-studio.vercel.app to see the list of supported executors.</font>",
 }, nil, (getgenv and getgenv()) or _G or shared;
 
 game:GetService("CoreGui").RobloxPromptGui.promptOverlay.ChildAdded:Connect(function(v)
